@@ -1,0 +1,473 @@
+import { LIBS } from "./libs.js";
+import { MyObject } from "./myObject.js";
+import { generateClefairy_Body } from "./clefairy_body.js";
+import { generateClefairy_Eyes } from "./clefairy_eyes.js";
+import { generateClefairy_Cheek } from "./clefairy_cheek.js";
+import { generateClefairy_Feet } from "./clefairy_feet.js";
+import { generateClefairy_Horn } from "./clefairy_horn.js";
+import { generateClefairy_Hand } from "./clefairy_hand.js";
+import { generateClefairy_Tail } from "./clefairy_tail.js";
+import { generateClefairy_Wing } from "./clefairy_wing.js";
+import { generateClefairy_Swirl } from "./clefairy_swirl.js";
+import { generateClefairy_Claw } from "./clefairy_claw.js";
+import { generateClefairy_Mouth } from "./clefairy_mouth.js";
+
+function main() {
+  var CANVAS = document.getElementById("myCanvas");
+  CANVAS.width = window.innerWidth;
+  CANVAS.height = window.innerHeight;
+
+  let Gl;
+  try {
+    Gl = CANVAS.getContext("webgl", { antialias: true });
+  } catch (e) {
+    alert("WebGL not supported");
+    console.log(e);
+    return false;
+  }
+
+  // ───────────────── Shaders ─────────────────
+  var shader_vertex_source = `
+    attribute vec3 position;
+    uniform mat4 Pmatrix, Vmatrix, Mmatrix;
+    attribute vec3 color;
+    varying vec3 vColor;
+    void main(void) {
+      gl_Position = Pmatrix * Vmatrix * Mmatrix * vec4(position, 1.);
+      vColor = color;
+    }
+  `;
+
+  var shader_fragment_source = `
+    precision mediump float;
+    varying vec3 vColor;
+    uniform float uAlpha;     // NEW: per-object opacity
+    void main(void) {
+      gl_FragColor = vec4(vColor, uAlpha);
+    }
+  `;
+  var compile_shader = function (source, type, typeString) {
+    var shader = Gl.createShader(type);
+    Gl.shaderSource(shader, source);
+    Gl.compileShader(shader);
+    if (!Gl.getShaderParameter(shader, Gl.COMPILE_STATUS)) {
+      console.error(
+        "Error in " + typeString + " shader: " + Gl.getShaderInfoLog(shader)
+      );
+      Gl.deleteShader(shader);
+      return null;
+    }
+    return shader;
+  };
+
+  var SHADER_PROGRAM = Gl.createProgram();
+  var shader_vertex = compile_shader(
+    shader_vertex_source,
+    Gl.VERTEX_SHADER,
+    "vertex"
+  );
+  var shader_fragment = compile_shader(
+    shader_fragment_source,
+    Gl.FRAGMENT_SHADER,
+    "fragment"
+  );
+  Gl.attachShader(SHADER_PROGRAM, shader_vertex);
+  Gl.attachShader(SHADER_PROGRAM, shader_fragment);
+  Gl.linkProgram(SHADER_PROGRAM);
+
+  var _position = Gl.getAttribLocation(SHADER_PROGRAM, "position");
+  var _color = Gl.getAttribLocation(SHADER_PROGRAM, "color");
+  var _Pmatrix = Gl.getUniformLocation(SHADER_PROGRAM, "Pmatrix");
+  var _Vmatrix = Gl.getUniformLocation(SHADER_PROGRAM, "Vmatrix");
+  var _Mmatrix = Gl.getUniformLocation(SHADER_PROGRAM, "Mmatrix");
+
+  Gl.enableVertexAttribArray(_position);
+  Gl.enableVertexAttribArray(_color);
+
+  Gl.enable(Gl.BLEND);
+  Gl.blendFunc(Gl.SRC_ALPHA, Gl.ONE_MINUS_SRC_ALPHA);
+  Gl.useProgram(SHADER_PROGRAM);
+
+  // Left Eye (width -> x, height -> y, depth -> z, stack, steps)
+  var clefairy_leftEye = generateClefairy_Eyes(0.07, 0.2, 0.3, 60, 60);
+  var leftEye = new MyObject(Gl, SHADER_PROGRAM, _position, _color, _Mmatrix, clefairy_leftEye.vertices, clefairy_leftEye.faces);
+  LIBS.translateX(leftEye.MOVE_MATRIX, -0.20); // Left Right
+  LIBS.translateY(leftEye.MOVE_MATRIX, 0.15); // Up down
+  LIBS.translateZ(leftEye.MOVE_MATRIX, 0.325); //Ke arah kita sebagai pengguna
+
+  var clefairy_rightEye = generateClefairy_Eyes(0.07, 0.2, 0.3, 60, 60);
+  var rightEye = new MyObject(Gl, SHADER_PROGRAM, _position, _color, _Mmatrix, clefairy_rightEye.vertices, clefairy_rightEye.faces);
+  LIBS.translateX(rightEye.MOVE_MATRIX, 0.20);
+  LIBS.translateY(rightEye.MOVE_MATRIX, 0.15);
+  LIBS.translateZ(rightEye.MOVE_MATRIX, 0.325);
+
+  var clefairy_leftCheek = generateClefairy_Cheek(0.2, 0.07, 0.3, 60, 60);
+  var leftCheek = new MyObject(Gl, SHADER_PROGRAM, _position, _color, _Mmatrix,clefairy_leftCheek.vertices, clefairy_leftCheek.faces)
+  LIBS.translateX(leftCheek.MOVE_MATRIX, -0.25);
+  LIBS.translateY(leftCheek.MOVE_MATRIX, 0.05);
+  LIBS.translateZ(leftCheek.MOVE_MATRIX, 0.325);
+
+  var clefairy_rightCheek = generateClefairy_Cheek(0.2, 0.07, 0.3, 60, 60);
+  var rightCheek = new MyObject(Gl, SHADER_PROGRAM, _position, _color, _Mmatrix,clefairy_rightCheek.vertices, clefairy_rightCheek.faces)
+  LIBS.translateX(rightCheek.MOVE_MATRIX, 0.25);
+  LIBS.translateY(rightCheek.MOVE_MATRIX, 0.05);
+  LIBS.translateZ(rightCheek.MOVE_MATRIX, 0.325);
+
+  var clefairy_leftFeet = generateClefairy_Feet(0.34, 0.32, 0.85, 60, 60)
+  var leftFeet = new MyObject(Gl, SHADER_PROGRAM, _position, _color,  _Mmatrix, clefairy_leftFeet.vertices, clefairy_leftFeet.faces)
+  LIBS.translateX(leftFeet.MOVE_MATRIX, -0.305);
+  LIBS.translateY(leftFeet.MOVE_MATRIX, -0.68);
+  LIBS.translateZ(leftFeet.MOVE_MATRIX, 0.05);
+  LIBS.rotateX(leftFeet.MOVE_MATRIX, 102)
+
+  var clefairy_rightFeet = generateClefairy_Feet(0.34, 0.32, 0.85, 60, 60)
+  var rightFeet = new MyObject(Gl, SHADER_PROGRAM, _position, _color,  _Mmatrix, clefairy_rightFeet.vertices, clefairy_leftFeet.faces)
+  LIBS.translateX(rightFeet.MOVE_MATRIX, 0.305);
+  LIBS.translateY(rightFeet.MOVE_MATRIX, -0.68);
+  LIBS.translateZ(rightFeet.MOVE_MATRIX, 0.05);
+  LIBS.rotateX(rightFeet.MOVE_MATRIX, 102)
+
+  var clefairy_leftHorn = generateClefairy_Horn(0.30, 0.30,0.8, 60, 60)
+  var leftHorn = new MyObject(Gl, SHADER_PROGRAM, _position, _color,  _Mmatrix, clefairy_leftHorn.vertices, clefairy_leftHorn.faces)
+  LIBS.translateX(leftHorn.MOVE_MATRIX, -0.7);
+  LIBS.translateY(leftHorn.MOVE_MATRIX, 0.60);
+  LIBS.translateZ(leftHorn.MOVE_MATRIX, 0.1);
+  LIBS.rotateX(leftHorn.MOVE_MATRIX, -102)
+  LIBS.rotateY(leftHorn.MOVE_MATRIX, 30)
+  LIBS.rotateZ(leftHorn.MOVE_MATRIX, 26)
+
+  var clefairy_rightHorn = generateClefairy_Horn(0.30, 0.30,0.8, 60, 60)
+  var rightHorn = new MyObject(Gl, SHADER_PROGRAM, _position, _color,  _Mmatrix, clefairy_rightHorn.vertices, clefairy_rightHorn.faces)
+  LIBS.translateX(rightHorn.MOVE_MATRIX, 0.7);
+  LIBS.translateY(rightHorn.MOVE_MATRIX, 0.60);
+  LIBS.translateZ(rightHorn.MOVE_MATRIX, 0.1);
+  LIBS.rotateX(rightHorn.MOVE_MATRIX, -102)
+  LIBS.rotateY(rightHorn.MOVE_MATRIX, -30)
+  LIBS.rotateZ(rightHorn.MOVE_MATRIX, -26)
+
+  var clefairy_leftHand = generateClefairy_Hand(0.3, 0.25, 0.9, 60, 60, -1)
+  var leftHand = new MyObject(Gl, SHADER_PROGRAM, _position, _color,  _Mmatrix, clefairy_leftHand.vertices, clefairy_leftHand.faces)
+  LIBS.translateX(leftHand.MOVE_MATRIX, -0.75);
+  LIBS.translateY(leftHand.MOVE_MATRIX, -0.05);
+  LIBS.translateZ(leftHand.MOVE_MATRIX, 0.1);
+  LIBS.rotateX(leftHand.MOVE_MATRIX, -107.5)
+  LIBS.rotateY(leftHand.MOVE_MATRIX, 36.5)
+  LIBS.rotateZ(leftHand.MOVE_MATRIX, 26)
+
+  var clefairy_rightHand = generateClefairy_Hand(0.3, 0.25, 0.9, 60, 60, 1)
+  var rightHand = new MyObject(Gl, SHADER_PROGRAM, _position, _color,  _Mmatrix, clefairy_rightHand.vertices, clefairy_rightHand.faces)
+  LIBS.translateX(rightHand.MOVE_MATRIX, 0.75);
+  LIBS.translateY(rightHand.MOVE_MATRIX, -0.05);
+  LIBS.translateZ(rightHand.MOVE_MATRIX, 0.1);
+  LIBS.rotateX(rightHand.MOVE_MATRIX, -107.5)
+  LIBS.rotateY(rightHand.MOVE_MATRIX, -36.5)
+  LIBS.rotateZ(rightHand.MOVE_MATRIX, -26)
+
+  var clefairy_tail = generateClefairy_Tail(0.35, 0.15, 0.25, 80, 28)
+  var tail = new MyObject(Gl, SHADER_PROGRAM, _position, _color,  _Mmatrix, clefairy_tail.vertices, clefairy_tail.faces)
+  LIBS.translateX(tail.MOVE_MATRIX, 0);
+  LIBS.translateY(tail.MOVE_MATRIX, -0.45);
+  LIBS.translateZ(tail.MOVE_MATRIX, -1.05);
+  LIBS.rotateY(tail.MOVE_MATRIX, 30)
+  LIBS.rotateX(tail.MOVE_MATRIX, 120)
+
+  var clefairy_leftWing = generateClefairy_Wing(0.2, 0.15, 0.7, 60, 60, -1)
+  var leftWing = new MyObject(Gl, SHADER_PROGRAM, _position, _color,  _Mmatrix, clefairy_leftWing.vertices, clefairy_leftWing.faces)
+  LIBS.translateX(leftWing.MOVE_MATRIX, -0.25);
+  LIBS.translateY(leftWing.MOVE_MATRIX, 0.05);
+  LIBS.translateZ(leftWing.MOVE_MATRIX, -0.6);
+  LIBS.rotateX(leftWing.MOVE_MATRIX, -102)
+  LIBS.rotateY(leftWing.MOVE_MATRIX, -34.25)
+  LIBS.rotateZ(leftWing.MOVE_MATRIX, -37.5)
+
+  var clefairy_rightWing = generateClefairy_Wing(0.2, 0.15, 0.7, 60, 60, 1)
+  var rightWing = new MyObject(Gl, SHADER_PROGRAM, _position, _color,  _Mmatrix, clefairy_rightWing.vertices, clefairy_rightWing.faces)
+  LIBS.translateX(rightWing.MOVE_MATRIX, 0.25);
+  LIBS.translateY(rightWing.MOVE_MATRIX, 0.05);
+  LIBS.translateZ(rightWing.MOVE_MATRIX, -0.6);
+  LIBS.rotateX(rightWing.MOVE_MATRIX, -102)
+  LIBS.rotateY(rightWing.MOVE_MATRIX, 34.25)
+  LIBS.rotateZ(rightWing.MOVE_MATRIX, 37.5)
+
+  var clefairy_swirl = generateClefairy_Swirl(0.2, 0.15, 0.25, 80, 28)
+  var swirl = new MyObject(Gl, SHADER_PROGRAM, _position, _color,  _Mmatrix, clefairy_swirl.vertices, clefairy_swirl.faces)
+  LIBS.translateX(swirl.MOVE_MATRIX, 0);
+  LIBS.translateY(swirl.MOVE_MATRIX, 0.6);
+  LIBS.translateZ(swirl.MOVE_MATRIX, 0.5);
+  LIBS.rotateY(swirl.MOVE_MATRIX, 3)
+  LIBS.rotateX(swirl.MOVE_MATRIX, 30.75)
+  LIBS.rotateZ(swirl.MOVE_MATRIX, -37.75)
+
+  var clefairy_leftClaw1 = generateClefairy_Claw(0.02, 0.03 ,0.1, 60, 60)
+  var leftClaw1 = new MyObject(Gl, SHADER_PROGRAM, _position, _color,  _Mmatrix, clefairy_leftClaw1.vertices, clefairy_leftClaw1.faces)
+  LIBS.translateX(leftClaw1.MOVE_MATRIX, 0.25);
+  LIBS.translateY(leftClaw1.MOVE_MATRIX, 0.045);
+  LIBS.translateZ(leftClaw1.MOVE_MATRIX, 0.375); //x + => -, - => +
+  LIBS.rotateX(leftClaw1.MOVE_MATRIX, -95.5)
+  LIBS.rotateY(leftClaw1.MOVE_MATRIX, -32)
+  LIBS.rotateZ(leftClaw1.MOVE_MATRIX, -27)
+
+  var clefairy_leftClaw2 = generateClefairy_Claw(0.02, 0.03 ,0.1, 60, 60)
+  var leftClaw2 = new MyObject(Gl, SHADER_PROGRAM, _position, _color,  _Mmatrix, clefairy_leftClaw2.vertices, clefairy_leftClaw2.faces)
+  LIBS.translateX(leftClaw2.MOVE_MATRIX, 0.25);
+  LIBS.translateY(leftClaw2.MOVE_MATRIX, -0.045);
+  LIBS.translateZ(leftClaw2.MOVE_MATRIX, 0.375); //x + => -, - => +
+  LIBS.rotateX(leftClaw2.MOVE_MATRIX, -95.5)
+  LIBS.rotateY(leftClaw2.MOVE_MATRIX, -32)
+  LIBS.rotateZ(leftClaw2.MOVE_MATRIX, -27)
+
+  var clefairy_rightClaw1 = generateClefairy_Claw(0.02, 0.03 ,0.1, 60, 60)
+  var rightClaw1 = new MyObject(Gl, SHADER_PROGRAM, _position, _color,  _Mmatrix, clefairy_rightClaw1.vertices, clefairy_rightClaw1.faces)
+  LIBS.translateX(rightClaw1.MOVE_MATRIX, -0.25);
+  LIBS.translateY(rightClaw1.MOVE_MATRIX, 0.045);
+  LIBS.translateZ(rightClaw1.MOVE_MATRIX, 0.375); //x + => -, - => +
+  LIBS.rotateX(rightClaw1.MOVE_MATRIX, -95.5)
+  LIBS.rotateY(rightClaw1.MOVE_MATRIX, 32)
+  LIBS.rotateZ(rightClaw1.MOVE_MATRIX, 27)
+
+  var clefairy_rightClaw2 = generateClefairy_Claw(0.02, 0.03 ,0.1, 60, 60)
+  var rightClaw2 = new MyObject(Gl, SHADER_PROGRAM, _position, _color,  _Mmatrix, clefairy_rightClaw2.vertices, clefairy_rightClaw2.faces)
+  LIBS.translateX(rightClaw2.MOVE_MATRIX, -0.25);
+  LIBS.translateY(rightClaw2.MOVE_MATRIX, -0.045);
+  LIBS.translateZ(rightClaw2.MOVE_MATRIX, 0.375); //x + => -, - => +
+  LIBS.rotateX(rightClaw2.MOVE_MATRIX, -95.5)
+  LIBS.rotateY(rightClaw2.MOVE_MATRIX, 32)
+  LIBS.rotateZ(rightClaw2.MOVE_MATRIX, 27)
+
+  var clefairy_mouth = generateClefairy_Mouth(0.3, 0.05, 0.3, 100, 100)
+  var mouth = new MyObject(Gl, SHADER_PROGRAM, _position, _color,  _Mmatrix, clefairy_mouth.vertices, clefairy_mouth.faces)
+  LIBS.translateX(mouth.MOVE_MATRIX, 0);
+  LIBS.translateY(mouth.MOVE_MATRIX, -0.3);
+  LIBS.translateZ(mouth.MOVE_MATRIX, 0.625);
+  LIBS.rotateY(mouth.MOVE_MATRIX, 91.125)
+  LIBS.rotateX(mouth.MOVE_MATRIX, 1.5)
+
+
+
+  // Body
+  var clefairy_body = generateClefairy_Body(0.7, 0.8, 0.65, 60, 60)
+  var body = new MyObject(Gl, SHADER_PROGRAM, _position, _color, _Mmatrix, clefairy_body.vertices, clefairy_body.faces)
+
+  body.childs.push(leftEye)
+  body.childs.push(rightEye)
+  body.childs.push(leftCheek)
+  body.childs.push(rightCheek)
+  body.childs.push(mouth)
+  body.childs.push(leftFeet)
+  body.childs.push(rightFeet)
+  body.childs.push(leftHorn)
+  body.childs.push(rightHorn)
+  body.childs.push(leftHand)
+  body.childs.push(rightHand)
+  body.childs.push(tail)
+  body.childs.push(leftWing)
+  body.childs.push(rightWing)
+  body.childs.push(swirl)
+  leftHand.childs.push(leftClaw1)
+  leftHand.childs.push(leftClaw2)
+  rightHand.childs.push(rightClaw1)
+  rightHand.childs.push(rightClaw2)
+
+  body.setup()
+
+  var PROJMATRIX = LIBS.get_projection(
+    60,
+    CANVAS.width / CANVAS.height,
+    1,
+    100
+  );
+  var VIEWMATRIX = LIBS.get_I4();
+  LIBS.translateZ(VIEWMATRIX, -10);
+  LIBS.rotateY(body.MOVE_MATRIX, -Math.PI);
+
+  let THETA = 0,
+    PHI = 0;
+  let drag = false,
+    x_prev,
+    y_prev;
+  let dX = 0,
+    dY = 0;
+  var FRICTION = 0.05;
+
+  var mouseDown = (e) => {
+    drag = true;
+    x_prev = e.pageX;
+    y_prev = e.pageY;
+    e.preventDefault();
+  };
+  var mouseUp = () => {
+    drag = false;
+  };
+  var mouseMove = (e) => {
+    if (!drag) return false;
+    dX = ((e.pageX - x_prev) * 2 * Math.PI) / CANVAS.width;
+    dY = ((e.pageY - y_prev) * 2 * Math.PI) / CANVAS.height;
+    THETA += dX;
+    PHI += dY;
+    x_prev = e.pageX;
+    y_prev = e.pageY;
+    e.preventDefault();
+  };
+  CANVAS.addEventListener("mousedown", mouseDown, false);
+  CANVAS.addEventListener("mouseup", mouseUp, false);
+  CANVAS.addEventListener("mouseout", mouseUp, false);
+  CANVAS.addEventListener("mousemove", mouseMove, false);
+
+  Gl.enable(Gl.DEPTH_TEST);
+  Gl.depthFunc(Gl.LEQUAL);
+  Gl.clearColor(0,0,0,1);
+  Gl.clearDepth(1.0);
+
+  let autoRotate = 0;
+  let waveTime = 0;
+  let bodyTime = 0;
+  let walkTime = 0;
+  let jumpTime = 0;
+  let jumpDuration = Math.PI;
+
+  let targetScale = 1.0;
+  let currentScale = 1.0;
+  let scaleSpeed = 0.05;
+
+  let isJumping = false;
+  let isWaving = false;
+  let isWalking = false;
+
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "h" || e.key === "H") {
+      isWaving = !isWaving;
+    } 
+    else if (e.key === "w" || e.key === "W") {
+      isWalking = !isWalking;
+    }
+    else if (e.key === " " || e.key === " ") {
+      isJumping = !isJumping
+      if (!isJumping) {
+        jumpTime = 0;
+      }
+    }
+    else if (e.key === "ArrowUp") {
+    targetScale = Math.min(2.0, targetScale + 0.2); // limit max size
+    } 
+    else if (e.key === "ArrowDown") {
+      targetScale = Math.max(0.5, targetScale - 0.2); // limit min size
+    }
+  });
+
+
+  var animate = function () {
+    Gl.viewport(0, 0, CANVAS.width, CANVAS.height);
+    Gl.clear(Gl.COLOR_BUFFER_BIT | Gl.DEPTH_BUFFER_BIT);
+
+    body.MOVE_MATRIX = LIBS.get_I4();
+    LIBS.rotateX(body.MOVE_MATRIX, (20 * Math.PI) / 180);
+
+    let temp = LIBS.get_I4();
+    LIBS.rotateY(temp, THETA);
+    body.MOVE_MATRIX = LIBS.multiply(body.MOVE_MATRIX, temp);
+
+    temp = LIBS.get_I4();
+    LIBS.rotateX(temp, PHI);
+    body.MOVE_MATRIX = LIBS.multiply(body.MOVE_MATRIX, temp);
+
+    LIBS.translateZ(temp, -0.6);
+    body.MOVE_MATRIX = LIBS.multiply(body.MOVE_MATRIX, temp);
+
+    autoRotate += 0.02;
+    if (autoRotate > Math.PI * 2) autoRotate -= Math.PI * 2;
+
+    temp = LIBS.get_I4();
+    LIBS.translateZ(temp, 0.6);
+    body.MOVE_MATRIX = LIBS.multiply(body.MOVE_MATRIX, temp);
+
+    // ─────────────── SPEED MANAGEMENT ───────────────
+    if (isWaving) waveTime += 0.025;
+    if (isWalking) {
+      bodyTime += 0.1;
+      walkTime += 0.05;
+    } 
+    if (isJumping) jumpTime += 0.08;
+
+    // ─────────────── HAND WAVE ───────────────
+    let handWaveAngle = Math.sin(waveTime * 1.2) * (15 * Math.PI / 180);
+
+    leftHand.MOVE_MATRIX = LIBS.get_I4();
+    LIBS.translateX(leftHand.MOVE_MATRIX, -0.75);
+    LIBS.translateY(leftHand.MOVE_MATRIX, -0.05);
+    LIBS.translateZ(leftHand.MOVE_MATRIX, 0.1);
+    LIBS.rotateX(leftHand.MOVE_MATRIX, -107.5 + handWaveAngle);
+    LIBS.rotateY(leftHand.MOVE_MATRIX, 36.5);
+    LIBS.rotateZ(leftHand.MOVE_MATRIX, 26);
+
+    rightHand.MOVE_MATRIX = LIBS.get_I4();
+    LIBS.translateX(rightHand.MOVE_MATRIX, 0.75);
+    LIBS.translateY(rightHand.MOVE_MATRIX, -0.05);
+    LIBS.translateZ(rightHand.MOVE_MATRIX, 0.1);
+    LIBS.rotateX(rightHand.MOVE_MATRIX, -107.5 - handWaveAngle);
+    LIBS.rotateY(rightHand.MOVE_MATRIX, -36.5);
+    LIBS.rotateZ(rightHand.MOVE_MATRIX, -26);
+
+    // ─────────────── FEET WALK ───────────────
+    let legAngle = Math.sin(walkTime) * (20 * Math.PI / 180); //20 derajat
+
+    leftFeet.MOVE_MATRIX = LIBS.get_I4();
+    LIBS.translateX(leftFeet.MOVE_MATRIX, -0.305);
+    LIBS.translateY(leftFeet.MOVE_MATRIX, -0.68);
+    LIBS.translateZ(leftFeet.MOVE_MATRIX, 0.05);
+    LIBS.rotateX(leftFeet.MOVE_MATRIX, 102 + legAngle);
+
+    rightFeet.MOVE_MATRIX = LIBS.get_I4();
+    LIBS.translateX(rightFeet.MOVE_MATRIX, 0.305);
+    LIBS.translateY(rightFeet.MOVE_MATRIX, -0.68);
+    LIBS.translateZ(rightFeet.MOVE_MATRIX, 0.05);
+    LIBS.rotateX(rightFeet.MOVE_MATRIX, 102 - legAngle);
+
+    // ─────────────── BODY SWAY ───────────────
+    let bodySway = Math.sin(bodyTime * 0.5) * (5 * Math.PI / 180); // 5 derajat
+    let bodyBob = Math.abs(Math.sin(bodyTime * 0.5)) * 0.03;
+
+    let tempSway = LIBS.get_I4();
+    LIBS.translateY(tempSway, -bodyBob);
+    LIBS.rotateY(tempSway, bodySway);
+    body.MOVE_MATRIX = LIBS.multiply(body.MOVE_MATRIX, tempSway);
+
+    // ─────────────── FEET JUMP ───────────────
+    let jumpHeight = 0;
+    if (isJumping) {
+      jumpHeight = Math.sin(jumpTime) * 0.6;
+      if (jumpTime >= jumpDuration) {
+        isJumping = false;
+        jumpTime = 0;
+        jumpHeight = 0;
+      }
+    }
+
+    let jumpMatrix = LIBS.get_I4();
+    LIBS.translateY(jumpMatrix, Math.max(jumpHeight, 0));
+    body.MOVE_MATRIX = LIBS.multiply(body.MOVE_MATRIX, jumpMatrix);
+
+    // ─────────────── SCALE ───────────────
+    currentScale += (targetScale - currentScale) * scaleSpeed;
+    let scaleMatrix = LIBS.get_I4();
+    LIBS.scale(scaleMatrix, currentScale, currentScale, currentScale);
+    body.MOVE_MATRIX = LIBS.multiply(body.MOVE_MATRIX, scaleMatrix);
+
+
+    if (!drag) {
+      dX *= 1 - FRICTION;
+      dY *= 1 - FRICTION;
+      THETA += dX;
+      PHI += dY;
+    }
+
+
+    Gl.uniformMatrix4fv(_Pmatrix, false, PROJMATRIX);
+    Gl.uniformMatrix4fv(_Vmatrix, false, VIEWMATRIX);
+    body.render(LIBS.get_I4())
+
+    Gl.flush();
+    requestAnimationFrame(animate);
+  };
+  animate(0);
+}
+window.addEventListener("load", main);

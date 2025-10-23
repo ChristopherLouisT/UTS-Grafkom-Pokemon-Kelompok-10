@@ -1,0 +1,11 @@
+export { generateClefairy_Body } from "./Clefairy/clefairy_body.js";
+export { generateClefairy_Eyes } from "./Clefairy/clefairy_eyes.js";
+export { generateClefairy_Cheek } from "./Clefairy/clefairy_cheek.js";
+export { generateClefairy_Feet } from "./Clefairy/clefairy_feet.js";
+export { generateClefairy_Horn } from "./Clefairy/clefairy_horn.js";
+export { generateClefairy_Hand } from "./Clefairy/clefairy_hand.js";
+export { generateClefairy_Tail } from "./Clefairy/clefairy_tail.js";
+export { generateClefairy_Wing } from "./Clefairy/clefairy_wing.js";
+export { generateClefairy_Swirl } from "./Clefairy/clefairy_swirl.js";
+export { generateClefairy_Claw } from "./Clefairy/clefairy_claw.js";
+export { generateClefairy_Mouth } from "./Clefairy/clefairy_mouth.js";

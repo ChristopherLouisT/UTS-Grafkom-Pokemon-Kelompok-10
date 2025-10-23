@@ -1,0 +1,9 @@
+export { generateCleffa_Body } from "./Cleffa/cleffa_body.js";
+export { generateCleffa_Eyes } from "./Cleffa/cleffa_eyes.js";
+export { generateCleffa_Cheek } from "./Cleffa/cleffa_cheek.js";
+export { generateCleffa_Feet } from "./Cleffa/cleffa_feet.js";
+export { generateCleffa_Horn } from "./Cleffa/cleffa_horn.js";
+export { generateCleffa_Hand } from "./Cleffa/cleffa_hand.js";
+export { generateCleffa_Tail } from "./Cleffa/cleffa_tail.js";
+export { generateCleffa_Swirl } from "./Cleffa/cleffa_swirl.js";
+export { generateCleffa_Mouth } from "./Cleffa/cleffa_mouth.js";

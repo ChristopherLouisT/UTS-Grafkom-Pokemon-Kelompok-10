@@ -1,0 +1,9 @@
+export { generateClefable_Body } from "./Cleffable/clefable_body.js";
+export { generateClefable_Eyes } from "./Cleffable/clefable_eyes.js";
+export { generateClefable_Cheek } from "./Cleffable/clefable_cheek.js";
+export { generateClefable_Horns } from "./Cleffable/clefable_horns.js";
+export { generateClefable_Feet } from "./Cleffable/clefable_feet.js";
+export { generateClefable_Wing } from "./Cleffable/clefable_wings.js";
+export { generateClefable_Hair } from "./Cleffable/clefable_hair.js";
+export { generateClefairy_Hand } from "./Cleffable/clefable_hand.js";
+export { generateClefairy_Tail } from "./Cleffable/clefairy_tail.js";
