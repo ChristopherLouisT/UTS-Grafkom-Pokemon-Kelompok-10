@@ -6,4 +6,5 @@ export { generateClefable_Feet } from "./Cleffable/clefable_feet.js";
 export { generateClefable_Wing } from "./Cleffable/clefable_wings.js";
 export { generateClefable_Hair } from "./Cleffable/clefable_hair.js";
 export { generateClefairy_Hand } from "./Cleffable/clefable_hand.js";
-export { generateClefairy_Tail } from "./Cleffable/clefairy_tail.js";
+export { generateClefable_Tail } from "./Cleffable/clefable_tail.js";
+export { generateClefable_Mouth } from "./Cleffable/clefable_mouth.js";
