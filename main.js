@@ -393,7 +393,7 @@ function main() {
     LIBS.translateX(cleffa.rightHand.MOVE_MATRIX, 0.45);
     LIBS.translateY(cleffa.rightHand.MOVE_MATRIX, -0.25);
     LIBS.translateZ(cleffa.rightHand.MOVE_MATRIX, 0.4);
-    LIBS.rotateX(cleffa.rightHand.MOVE_MATRIX, -107.1 + handWaveAngleCleffa);
+    LIBS.rotateX(cleffa.rightHand.MOVE_MATRIX, -107.1 - handWaveAngleCleffa);
     LIBS.rotateY(cleffa.rightHand.MOVE_MATRIX, -37);
     LIBS.rotateZ(cleffa.rightHand.MOVE_MATRIX, -26);
 
@@ -401,7 +401,7 @@ function main() {
     LIBS.translateX(clefairy.rightHand.MOVE_MATRIX, 0.75);
     LIBS.translateY(clefairy.rightHand.MOVE_MATRIX, -0.05);
     LIBS.translateZ(clefairy.rightHand.MOVE_MATRIX, 0.1);
-    LIBS.rotateX(clefairy.rightHand.MOVE_MATRIX, -107.5 + handWaveAngleClefairy);
+    LIBS.rotateX(clefairy.rightHand.MOVE_MATRIX, -107.5 - handWaveAngleClefairy);
     LIBS.rotateY(clefairy.rightHand.MOVE_MATRIX, -36.5);
     LIBS.rotateZ(clefairy.rightHand.MOVE_MATRIX, -26);
 
@@ -409,7 +409,7 @@ function main() {
     LIBS.translateX(cleffable.rightHand.MOVE_MATRIX, 0.88);
     LIBS.translateY(cleffable.rightHand.MOVE_MATRIX, 0.1);
     LIBS.translateZ(cleffable.rightHand.MOVE_MATRIX, 0.27);
-    LIBS.rotateY(cleffable.rightHand.MOVE_MATRIX, -5 + handWaveAngleCleffable);
+    LIBS.rotateY(cleffable.rightHand.MOVE_MATRIX, -5 - handWaveAngleCleffable);
 
     // ─────────────── FEET WALK ───────────────
     let legAngleCleffa = Math.sin(walkTimeCleffa) * (20 * Math.PI / 180); //20 derajat
