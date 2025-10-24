@@ -190,6 +190,18 @@ function main() {
   let isWavingCleffable = false;
   let isWalkingCleffable = false;
 
+  let winkTimeCleffa = 0;
+  let isWinkingCleffa = false;
+  let winkDurationCleffa = Math.PI;
+
+  let winkTimeClefairy = 0;
+  let isWinkingClefairy = false;
+  let winkDurationClefairy = Math.PI;
+
+  let winkTimeCleffable = 0;
+  let isWinkingCleffable = false;
+  let winkDurationCleffable = Math.PI;
+
   let orbitEnabled = false;
   let orbitAngle = 0;
   let orbitSpeed = 0.005;
@@ -271,6 +283,18 @@ function main() {
 
     else if (e.key === "l" || e.key ==='L') {
       autoRotation = !autoRotation;
+    }
+    else if (e.key === "z" || e.key === "Z") {
+      isWinkingCleffa = true;
+      winkTimeCleffa = 0;
+    }
+    else if (e.key === "x" || e.key === "X") {
+      isWinkingClefairy = true;
+      winkTimeClefairy = 0;
+    }
+    else if (e.key === "c" || e.key === "C") {
+      isWinkingCleffable = true;
+      winkTimeCleffable = 0;
     }
   });
 
@@ -449,7 +473,7 @@ function main() {
     LIBS.rotateY(tempSwayClefairy, bodySwayClefairy);
     LIBS.translateY(tempSwayCleffable, -bodyBobCleffable);
     LIBS.rotateY(tempSwayCleffable, bodySwayCleffable);
-    cleffa.body.MOVE_MATRIX = LIBS.multiply(cleffa.body.MOVE_MATRIX, tempSwayClefairy);
+    cleffa.body.MOVE_MATRIX = LIBS.multiply(cleffa.body.MOVE_MATRIX, tempSwayCleffa);
     clefairy.body.MOVE_MATRIX = LIBS.multiply(clefairy.body.MOVE_MATRIX, tempSwayClefairy);
     cleffable.body.MOVE_MATRIX = LIBS.multiply(cleffable.body.MOVE_MATRIX, tempSwayCleffable);
 
@@ -510,13 +534,82 @@ function main() {
     clefairy.body.MOVE_MATRIX = LIBS.multiply(clefairy.body.MOVE_MATRIX, scaleMatrixClefairy);
     cleffable.body.MOVE_MATRIX = LIBS.multiply(cleffable.body.MOVE_MATRIX, scaleMatrixCleffable);
 
+    // ─────────────── WINK ───────────────
+    if (isWinkingCleffa) {
+      winkTimeCleffa += 0.1;
+      let winkValue = Math.sin(winkTimeCleffa);
+      let eyeScaleY = 1 - Math.max(0, winkValue);
+
+      cleffa.rightEye.MOVE_MATRIX = LIBS.get_I4();
+      LIBS.translateX(cleffa.rightEye.MOVE_MATRIX, 0.10);
+      LIBS.translateY(cleffa.rightEye.MOVE_MATRIX, 0.25);
+      LIBS.translateZ(cleffa.rightEye.MOVE_MATRIX, 0.35);
+      LIBS.scale(cleffa.rightEye.MOVE_MATRIX, 1.0, eyeScaleY, 1.0);
+
+      cleffa.leftEye.MOVE_MATRIX = LIBS.get_I4();
+      LIBS.translateX(cleffa.leftEye.MOVE_MATRIX, -0.10);
+      LIBS.translateY(cleffa.leftEye.MOVE_MATRIX, 0.25);
+      LIBS.translateZ(cleffa.leftEye.MOVE_MATRIX, 0.35);
+      LIBS.scale(cleffa.leftEye.MOVE_MATRIX, 1.0, eyeScaleY, 1.0);
+
+      if (winkTimeCleffa >= winkDurationCleffa) {
+        isWinkingCleffa = false;
+        winkTimeCleffa = 0;
+      }
+    }
+
+    if (isWinkingClefairy) {
+      winkTimeClefairy += 0.1;
+      let winkValue = Math.sin(winkTimeClefairy);
+      let eyeScaleY = 1 - Math.max(0, winkValue);
+
+      clefairy.rightEye.MOVE_MATRIX = LIBS.get_I4();
+      LIBS.translateX(clefairy.rightEye.MOVE_MATRIX, 0.20);
+      LIBS.translateY(clefairy.rightEye.MOVE_MATRIX, 0.15);
+      LIBS.translateZ(clefairy.rightEye.MOVE_MATRIX, 0.325);
+      LIBS.scale(clefairy.rightEye.MOVE_MATRIX, 1.0, eyeScaleY, 1.0);
+
+      clefairy.leftEye.MOVE_MATRIX = LIBS.get_I4();
+      LIBS.translateX(clefairy.leftEye.MOVE_MATRIX, -0.20);
+      LIBS.translateY(clefairy.leftEye.MOVE_MATRIX, 0.15);
+      LIBS.translateZ(clefairy.leftEye.MOVE_MATRIX, 0.325);
+      LIBS.scale(clefairy.leftEye.MOVE_MATRIX, 1.0, eyeScaleY, 1.0);
+
+      if (winkTimeClefairy >= winkDurationClefairy) {
+        isWinkingClefairy = false;
+        winkTimeClefairy = 0;
+      }
+    }
+
+    if (isWinkingCleffable) {
+      winkTimeCleffable += 0.1;
+      let winkValue = Math.sin(winkTimeCleffable);
+      let eyeScaleY = 1 - Math.max(0, winkValue);
+
+      cleffable.rightEye.MOVE_MATRIX = LIBS.get_I4();
+      LIBS.translateX(cleffable.rightEye.MOVE_MATRIX, 0.20);
+      LIBS.translateY(cleffable.rightEye.MOVE_MATRIX, 0.1);
+      LIBS.translateZ(cleffable.rightEye.MOVE_MATRIX, 0.285);
+      LIBS.scale(cleffable.rightEye.MOVE_MATRIX, 1.0, eyeScaleY, 1.0);
+
+      cleffable.leftEye.MOVE_MATRIX = LIBS.get_I4();
+      LIBS.translateX(cleffable.leftEye.MOVE_MATRIX, -0.20);
+      LIBS.translateY(cleffable.leftEye.MOVE_MATRIX, 0.1);
+      LIBS.translateZ(cleffable.leftEye.MOVE_MATRIX, 0.285);
+      LIBS.scale(cleffable.leftEye.MOVE_MATRIX, 1.0, eyeScaleY, 1.0);
+
+      if (winkTimeCleffable >= winkDurationCleffable) {
+        isWinkingCleffable = false;
+        winkTimeCleffable = 0;
+      }
+    }
+
     //───────────────Arbitrary Rotation───────────────
     if (orbitEnabled) {
       orbitAngle += orbitSpeed;
       if (orbitAngle > Math.PI * 2) orbitAngle -= Math.PI * 2;
     }
 
-    clefairy.body.MOVE_MATRIX = LIBS.get_I4();
     let pivotX = 0.0;
     let pivotY = 1.0;
     let pivotZ = 1.0;
