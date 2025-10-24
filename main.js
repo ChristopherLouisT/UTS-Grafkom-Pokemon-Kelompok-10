@@ -5,6 +5,7 @@ import { Cleffable } from "./pokemonParts.js";
 import { createCleffaModel } from "./cleffaModel.js";
 import { createClefairyModel } from "./clefairyModel.js";
 import { createCleffableModel } from "./cleffableModel.js";
+import { createEnvironmentModel } from "./environmentModel.js";
 
 
 function main() {
@@ -87,6 +88,7 @@ function main() {
   const cleffa = createCleffaModel(Gl, SHADER_PROGRAM, _position, _color, _Mmatrix);
   const clefairy = createClefairyModel(Gl, SHADER_PROGRAM, _position, _color, _Mmatrix);
   const cleffable = createCleffableModel(Gl, SHADER_PROGRAM, _position, _color, _Mmatrix);
+  const environment = createEnvironmentModel(Gl,SHADER_PROGRAM,_position,_color,_Mmatrix);
 
   var PROJMATRIX = LIBS.get_projection(
     60,
@@ -95,7 +97,7 @@ function main() {
     100
   );
   var VIEWMATRIX = LIBS.get_I4();
-  LIBS.translateZ(VIEWMATRIX, -3);
+  LIBS.translateZ(VIEWMATRIX, -5);
   LIBS.translateX(VIEWMATRIX, 6)
   LIBS.rotateY(cleffa.body.MOVE_MATRIX, -Math.PI);
   LIBS.rotateY(clefairy.body.MOVE_MATRIX, -Math.PI);
@@ -136,10 +138,15 @@ function main() {
 
   Gl.enable(Gl.DEPTH_TEST);
   Gl.depthFunc(Gl.LEQUAL);
-  Gl.clearColor(0,0,0,1);
+  Gl.clearColor(0.53, 0.81, 0.98, 1.0);
   Gl.clearDepth(1.0);
 
   let autoRotate = 0;
+
+  let autoRotation = false;   
+  let rotationSpeed = 0.005; 
+  let cameraDistance = 12;  
+
 
   let waveTimeCleffa = 0;
   let bodyTimeCleffa = 0;
@@ -182,6 +189,10 @@ function main() {
   let isJumpingCleffable = false;
   let isWavingCleffable = false;
   let isWalkingCleffable = false;
+
+  let orbitEnabled = false;
+  let orbitAngle = 0;
+  let orbitSpeed = 0.005;
 
   window.addEventListener("keydown", (e) => {
     if (e.key === "h" || e.key === "H") {
@@ -252,6 +263,14 @@ function main() {
     }
     else if (e.key == "ArrowLeft") {
       LIBS.translateX(VIEWMATRIX, 1);
+    }
+
+    else if (e.key === "o" || e.key === "O") {
+      orbitEnabled = !orbitEnabled;
+    }
+
+    else if (e.key === "l" || e.key ==='L') {
+      autoRotation = !autoRotation;
     }
   });
 
@@ -491,6 +510,43 @@ function main() {
     clefairy.body.MOVE_MATRIX = LIBS.multiply(clefairy.body.MOVE_MATRIX, scaleMatrixClefairy);
     cleffable.body.MOVE_MATRIX = LIBS.multiply(cleffable.body.MOVE_MATRIX, scaleMatrixCleffable);
 
+    //───────────────Arbitrary Rotation───────────────
+    if (orbitEnabled) {
+      orbitAngle += orbitSpeed;
+      if (orbitAngle > Math.PI * 2) orbitAngle -= Math.PI * 2;
+    }
+
+    clefairy.body.MOVE_MATRIX = LIBS.get_I4();
+    let pivotX = 0.0;
+    let pivotY = 1.0;
+    let pivotZ = 1.0;
+
+    let temps = LIBS.get_I4();
+
+    LIBS.translateX(temps, -pivotX);
+    LIBS.translateY(temps, -pivotY);
+    LIBS.translateZ(temps, -pivotZ);
+    clefairy.body.MOVE_MATRIX = LIBS.multiply(clefairy.body.MOVE_MATRIX, temps);
+
+    temps = LIBS.get_I4();
+    LIBS.rotateY(temps, orbitAngle);
+    clefairy.body.MOVE_MATRIX = LIBS.multiply(clefairy.body.MOVE_MATRIX, temps);
+
+    temps = LIBS.get_I4();
+    LIBS.translateX(temps, pivotX);
+    LIBS.translateY(temps, pivotY);
+    LIBS.translateZ(temps, pivotZ);
+    clefairy.body.MOVE_MATRIX = LIBS.multiply(clefairy.body.MOVE_MATRIX, temps);
+
+    //Auto Rotation (This is used only for trailer)
+    // if (autoRotation) {
+    //   THETA += rotationSpeed;
+    // }
+
+    // VIEWMATRIX = LIBS.get_I4();
+    // LIBS.rotateY(VIEWMATRIX, THETA);
+    // LIBS.rotateX(VIEWMATRIX, PHI);
+    // LIBS.translateZ(VIEWMATRIX, -cameraDistance)
 
     if (!drag) {
       dX *= 1 - FRICTION;
@@ -505,6 +561,10 @@ function main() {
     cleffa.body.render(LIBS.get_I4())
     clefairy.body.render(LIBS.get_I4())
     cleffable.body.render(LIBS.get_I4())
+    environment.Ground.render(LIBS.get_I4())
+    environment.Sun.render(LIBS.get_I4())
+    for (const t of environment.trees) t.render(LIBS.get_I4());
+    for (const c of environment.clouds) c.render(LIBS.get_I4());
 
     Gl.flush();
     requestAnimationFrame(animate);

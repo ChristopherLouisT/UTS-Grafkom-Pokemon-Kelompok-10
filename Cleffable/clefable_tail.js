@@ -1,4 +1,4 @@
-export function generateClefairy_Tail(radius, tubeRadius, height, stacks, steps) {
+export function generateClefable_Tail(radius, tubeRadius, height, stacks, steps) {
     let vertices = [];
     let faces = [];
 

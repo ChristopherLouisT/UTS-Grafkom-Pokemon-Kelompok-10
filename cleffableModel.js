@@ -3,12 +3,12 @@ import { MyObject } from "./myObject.js";
 import * as Cleffable from "./cleffableParts.js";
 
 export function createCleffableModel(Gl, SHADER_PROGRAM, _position, _color, _Mmatrix) {
-    // Left Eye (width -> x, height -> y, depth -> z, stack, steps)
+  // (width -> x, height -> y, depth -> z, stack, steps)
   const Clefable_leftEye = Cleffable.generateClefable_Eyes(0.08, 0.3, 0.3, 60, 60);
   const leftEye = new MyObject(Gl, SHADER_PROGRAM, _position, _color, _Mmatrix, Clefable_leftEye.vertices, Clefable_leftEye.faces);
-  LIBS.translateX(leftEye.MOVE_MATRIX, -0.20); // Left Right
-  LIBS.translateY(leftEye.MOVE_MATRIX, 0.1); // Up down
-  LIBS.translateZ(leftEye.MOVE_MATRIX, 0.285); //Ke arah kita sebagai pengguna
+  LIBS.translateX(leftEye.MOVE_MATRIX, -0.20);
+  LIBS.translateY(leftEye.MOVE_MATRIX, 0.1);
+  LIBS.translateZ(leftEye.MOVE_MATRIX, 0.285);
 
   const Clefable_rightEye = Cleffable.generateClefable_Eyes(0.08, 0.3, 0.3, 60, 60);
   const rightEye = new MyObject(Gl, SHADER_PROGRAM, _position, _color, _Mmatrix, Clefable_rightEye.vertices, Clefable_rightEye.faces);
@@ -133,13 +133,23 @@ export function createCleffableModel(Gl, SHADER_PROGRAM, _position, _color, _Mma
   // LIBS.rotateZ(hair.MOVE_MATRIX, 180)
   // LIBS.rotateY(hair.MOVE_MATRIX, 116)
   
-  const Clefable_tail = Cleffable.generateClefairy_Tail(0.35, 0.15, 0.25, 80, 28)
+  const Clefable_tail = Cleffable.generateClefable_Tail(0.35, 0.15, 0.25, 80, 28)
   const tail = new MyObject(Gl, SHADER_PROGRAM, _position, _color,  _Mmatrix, Clefable_tail.vertices, Clefable_tail.faces)
   LIBS.translateX(tail.MOVE_MATRIX, 0.2); 
   LIBS.translateY(tail.MOVE_MATRIX, -0.5);  
   LIBS.translateZ(tail.MOVE_MATRIX, -1);
   LIBS.rotateY(tail.MOVE_MATRIX,-90);
   LIBS.rotateZ(tail.MOVE_MATRIX,0);
+
+  const Clefable_mouth = Cleffable.generateClefable_Mouth(0.15, 0.15, 0.15, 80, 28)
+  const mouth = new MyObject(Gl, SHADER_PROGRAM, _position, _color,  _Mmatrix, Clefable_mouth.vertices, Clefable_mouth.faces)
+  LIBS.translateX(mouth.MOVE_MATRIX, 0);
+  LIBS.translateY(mouth.MOVE_MATRIX, -0.08);
+  LIBS.translateZ(mouth.MOVE_MATRIX, 0.47);
+  LIBS.rotateY(mouth.MOVE_MATRIX, 0)
+  LIBS.rotateX(mouth.MOVE_MATRIX, 5)
+  LIBS.rotateZ(mouth.MOVE_MATRIX, 0)
+
   // Body
   const Clefable_body = Cleffable.generateClefable_Body(0.7, 0.7, 0.65, 60, 60)
   const body = new MyObject(Gl, SHADER_PROGRAM, _position, _color, _Mmatrix, Clefable_body.vertices, Clefable_body.faces)
@@ -155,6 +165,7 @@ export function createCleffableModel(Gl, SHADER_PROGRAM, _position, _color, _Mma
   body.childs.push(rightHorn)
   body.childs.push(hair)
   body.childs.push(tail)
+  body.childs.push(mouth)
   body.childs.push(leftWing)
   body.childs.push(leftWing2)
   body.childs.push(leftWing3)
@@ -175,6 +186,7 @@ export function createCleffableModel(Gl, SHADER_PROGRAM, _position, _color, _Mma
     leftHorn: leftHorn,
     rightHorn: rightHorn,
     tail: tail,
+    mouth: mouth,
     swirl: hair
   }; // Return the complete model
 }
