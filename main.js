@@ -409,9 +409,7 @@ function main() {
     LIBS.translateX(cleffable.rightHand.MOVE_MATRIX, 0.88);
     LIBS.translateY(cleffable.rightHand.MOVE_MATRIX, 0.1);
     LIBS.translateZ(cleffable.rightHand.MOVE_MATRIX, 0.27);
-    LIBS.rotateX(cleffable.rightHand.MOVE_MATRIX, -107.5 - handWaveAngleCleffable);
-    LIBS.rotateY(cleffable.rightHand.MOVE_MATRIX, -36.5);
-    LIBS.rotateZ(cleffable.rightHand.MOVE_MATRIX, -26);
+    LIBS.rotateY(cleffable.rightHand.MOVE_MATRIX, -5 + handWaveAngleCleffable);
 
     // ─────────────── FEET WALK ───────────────
     let legAngleCleffa = Math.sin(walkTimeCleffa) * (20 * Math.PI / 180); //20 derajat
